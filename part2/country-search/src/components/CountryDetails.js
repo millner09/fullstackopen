@@ -20,7 +20,7 @@ const CountryDetails = ({ country }) => {
     };
 
     fetchWeather();
-  }, []);
+  }, [api_key, country.latlng]);
 
   console.log(weather);
   return (
