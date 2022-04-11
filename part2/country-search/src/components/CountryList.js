@@ -1,4 +1,5 @@
 import CountryDetails from "./CountryDetails";
+import CountryListItem from "./CountryListItem";
 
 const CountryList = ({ countries }) => {
   return (
@@ -9,7 +10,9 @@ const CountryList = ({ countries }) => {
 
       {countries.length <= 10 &&
         countries.length > 1 &&
-        countries.map((country, i) => <p key={i}>{country.name.common}</p>)}
+        countries.map((country, i) => (
+          <CountryListItem key={i} country={country} />
+        ))}
 
       {countries.length === 1 && <CountryDetails country={countries[0]} />}
     </>
