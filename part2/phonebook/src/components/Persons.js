@@ -1,8 +1,23 @@
-const Persons = ({ personArr }) => {
-  return personArr.map((person, i) => (
-    <p key={i}>
-      {person.name} {person.number}
-    </p>
+const Persons = ({ persons, searchBy, handleDelete }) => {
+  console.log(persons);
+  console.log(searchBy);
+
+  const numbersToShow =
+    searchBy === ""
+      ? persons
+      : persons.filter((person) => {
+          const name = person.name.toUpperCase();
+
+          return name.includes(searchBy.toUpperCase());
+        });
+
+  return numbersToShow.map((person) => (
+    <div key={person.id}>
+      <p>
+        {person.name} {person.number}
+      </p>
+      <button onClick={() => handleDelete(person.id)}>Delete</button>
+    </div>
   ));
 };
 

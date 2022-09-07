@@ -3,12 +3,13 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import axios from "axios";
+import phoneService from "./services/phoneService";
 
 const App = () => {
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get("http://localhost:3001/persons");
-      setPersons(res.data);
+      const res = await phoneService.getAll();
+      setPersons(res);
     };
 
     fetchData();
@@ -36,25 +37,53 @@ const App = () => {
     const found = persons.find((person) => person.name === newName);
 
     if (found !== undefined) {
-      alert(`${newName} is already added to phonebook`);
+      phoneService
+        .update(found.id, { name: found.name, number: newNumber })
+        .then((updatedPerson) => {
+          setPersons(
+            persons.map((person) => {
+              return person.id !== updatedPerson.id
+                ? person
+                : {
+                    id: updatedPerson.id,
+                    name: updatedPerson.name,
+                    number: updatedPerson.number,
+                  };
+            })
+          );
+
+          setNewName("");
+          setNewNumber("");
+        });
     } else {
-      const newPersonArray = persons.concat({
-        name: newName,
-        number: newNumber,
-      });
-      setPersons(newPersonArray);
-      setNewName("");
+      // const newPersonArray = persons.concat({
+      //   name: newName,
+      //   number: newNumber,
+      // });
+
+      phoneService
+        .create({ name: newName, number: newNumber })
+        .then((newPerson) => {
+          console.log(newPerson);
+          setPersons(persons.concat(newPerson));
+          setNewName("");
+          setNewNumber("");
+        });
     }
   };
 
-  const numbersToShow =
-    searchBy === ""
-      ? persons
-      : persons.filter((person) => {
-          const name = person.name.toUpperCase();
+  const handleDelete = (id) => {
+    var confirm = window.confirm(
+      `Are you sure you want to delete ${persons.find((x) => x.id === id).name}`
+    );
 
-          return name.includes(searchBy.toUpperCase());
-        });
+    if (confirm) {
+      console.log(`Deleting: ${id}`);
+      phoneService.delete(id).then(() => {
+        setPersons(persons.filter((x) => x.id !== id));
+      });
+    }
+  };
 
   return (
     <div>
@@ -71,7 +100,11 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons personArr={numbersToShow} />
+      <Persons
+        persons={persons}
+        searchBy={searchBy}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };
