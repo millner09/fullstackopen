@@ -1,7 +1,30 @@
+var morgan = require("morgan");
+const cors = require("cors");
+
 const { response } = require("express");
 const express = require("express");
 const app = express();
 app.use(express.json());
+app.use(cors());
+
+morgan.token("body", function (req, res) {
+  return JSON.stringify(req.body);
+});
+
+app.use(
+  morgan(function (tokens, req, res) {
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, "content-length"),
+      "-",
+      tokens["response-time"](req, res),
+      "ms",
+      tokens.body(req, res),
+    ].join(" ");
+  })
+);
 
 let notes = [
   {
@@ -42,6 +65,25 @@ app.get("/api/notes/:id", (request, response) => {
   }
 });
 
+app.put("/api/notes/:id", (request, response) => {
+  const id = Number(request.params.id);
+  const body = request.body;
+  const note = notes.find((x) => x.id === id);
+  if (note) {
+    const updatedNote = {
+      id,
+      content: body.content,
+      important: body.important,
+    };
+
+    notes = notes.map((note) => (note.id !== id ? note : updatedNote));
+
+    response.json(updatedNote);
+  } else {
+    return response.status(404).end();
+  }
+});
+
 app.delete("/api/notes/:id", (request, response) => {
   const id = Number(request.params.id);
   notes = notes.filter((note) => note.id !== id);
@@ -74,7 +116,8 @@ const generateId = () => {
   return maxId + 1;
 };
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
