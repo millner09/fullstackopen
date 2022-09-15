@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from "axios";
 import phoneService from "./services/phoneService";
 
 const App = () => {
@@ -45,10 +44,10 @@ const App = () => {
               return person.id !== updatedPerson.id
                 ? person
                 : {
-                    id: updatedPerson.id,
-                    name: updatedPerson.name,
-                    number: updatedPerson.number,
-                  };
+                  id: updatedPerson.id,
+                  name: updatedPerson.name,
+                  number: updatedPerson.number,
+                };
             })
           );
 
@@ -56,11 +55,6 @@ const App = () => {
           setNewNumber("");
         });
     } else {
-      // const newPersonArray = persons.concat({
-      //   name: newName,
-      //   number: newNumber,
-      // });
-
       phoneService
         .create({ name: newName, number: newNumber })
         .then((newPerson) => {

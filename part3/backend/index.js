@@ -53,7 +53,7 @@ app.get("/api/notes/:id", (request, response, next) => {
     })
 });
 
-app.put("/api/notes/:id", (request, response) => {
+app.put("/api/notes/:id", (request, response, ntext) => {
   const body = request.body
   const note = {
     content: body.content,
