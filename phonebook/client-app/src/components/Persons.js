@@ -1,15 +1,13 @@
 const Persons = ({ persons, searchBy, handleDelete }) => {
-  console.log(persons);
-  console.log(searchBy);
 
   const numbersToShow =
     searchBy === ""
       ? persons
       : persons.filter((person) => {
-          const name = person.name.toUpperCase();
+        const name = person.name.toUpperCase();
 
-          return name.includes(searchBy.toUpperCase());
-        });
+        return name.includes(searchBy.toUpperCase());
+      });
 
   return numbersToShow.map((person) => (
     <div key={person.id}>
